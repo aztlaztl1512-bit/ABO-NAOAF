@@ -8,44 +8,59 @@
     <style>
         :root {
             --primary: #2d5a27; --accent: #d4af37; --bg: #fdfaf5; --text: #2c3e50;
+            --flip-bg: #4caf50; --done-bg: #e8f5e9; --sleep-color: #34495e;
         }
         body { font-family: 'Amiri', serif; background: var(--bg); margin: 0; padding: 0; color: var(--text); line-height: 1.9; }
         
-        .header-widgets {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
-            padding: 20px; max-width: 900px; margin: 0 auto;
-        }
+        .header-widgets { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 20px; max-width: 900px; margin: 0 auto; }
+        @media (min-width: 600px) { .header-widgets { grid-template-columns: 1.2fr 0.8fr; } }
+
         .widget-box {
             background: #fff; border-radius: 20px; padding: 20px;
             box-shadow: 0 8px 25px rgba(45, 90, 39, 0.05); border-bottom: 4px solid var(--accent);
-            height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
         }
-        .date-label { font-size: 0.85rem; color: var(--accent); font-weight: bold; margin-bottom: 5px; }
-        .date-text { font-size: 1.2rem; font-weight: bold; color: var(--primary); margin-bottom: 10px; }
-        .countdown-box { font-size: 1rem; color: #856404; background: #fff3cd; padding: 6px 15px; border-radius: 12px; font-weight: bold; }
 
-        #auto-zekr-box { font-size: 1.25rem; color: var(--primary); font-weight: 600; line-height: 1.5; }
+        .countdown-container { display: flex; gap: 8px; margin-top: 10px; direction: ltr; }
+        .time-segment { display: flex; flex-direction: column; align-items: center; }
+        .segment-label { font-size: 0.8rem; color: var(--text); font-weight: bold; margin-top: 5px; }
+        .flip-card {
+            background: var(--flip-bg); color: white; border-radius: 6px;
+            padding: 8px 12px; font-size: 1.6rem; font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); min-width: 45px; text-align: center;
+        }
+
+        .date-label { font-size: 0.85rem; color: var(--accent); font-weight: bold; }
+        .date-text { font-size: 1.1rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
+        #auto-zekr-box { font-size: 1.2rem; color: var(--primary); font-weight: 600; min-height: 3em; display: flex; align-items: center; transition: 0.5s; text-align: center; padding: 0 10px; }
 
         .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 25px; position: sticky; top: 10px; z-index: 100; }
-        .tab-btn { flex: 1; padding: 15px; border: none; border-radius: 15px; font-weight: bold; font-size: 1.2rem; cursor: pointer; transition: 0.3s; background: #fff; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .tab-btn.active { background: var(--primary); color: #fff; }
+        .time-hint { text-align: center; background: var(--primary); color: white; padding: 10px; border-radius: 12px; margin-bottom: 15px; font-weight: bold; font-size: 0.9rem; }
         
-        .zekr-card { background: #fff; border-radius: 25px; padding: 30px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); border-right: 12px solid #eee; cursor: pointer; transition: 0.2s; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; position: sticky; top: 10px; z-index: 100; overflow-x: auto; }
+        .tab-btn { flex: 1; min-width: 100px; padding: 15px; border: none; border-radius: 15px; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: 0.3s; background: #fff; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .tab-btn.active { background: var(--primary); color: #fff; }
+        #sleep-tab.active { background: var(--sleep-color); }
+        
+        .zekr-card { background: #fff; border-radius: 25px; padding: 25px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); border-right: 12px solid #eee; cursor: pointer; transition: 0.2s; }
         .morn-card { border-right-color: var(--primary); }
         .eve-card { border-right-color: #1a237e; }
-        .zekr-text { font-size: 1.45rem; text-align: justify; margin-bottom: 20px; font-weight: 500; color: #1a1a1a; white-space: pre-line; }
+        .sleep-card { border-right-color: var(--sleep-color); }
         
+        .zekr-text { font-size: 1.4rem; text-align: justify; margin-bottom: 15px; font-weight: 500; color: #1a1a1a; white-space: pre-line; }
+        .instruction { font-size: 1rem; color: #7f8c8d; margin-bottom: 10px; font-style: italic; border-bottom: 1px dashed #ddd; padding-bottom: 5px; }
+
         .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f0f0f0; padding-top: 15px; }
-        .counter { width: 65px; height: 65px; border-radius: 50%; border: 3px solid #eee; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; background: #fafafa; font-weight: bold; }
+        .counter { width: 60px; height: 60px; border-radius: 50%; border: 3px solid #eee; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: #fafafa; font-weight: bold; }
         
-        .opt-btn { background: #eee; border: none; padding: 6px 12px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; font-family: 'Amiri', serif; margin-left: 5px; }
+        .opt-btn { background: #eee; border: none; padding: 6px 12px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; font-family: 'Amiri'; margin-left: 5px; }
         .opt-btn.active { background: var(--accent); color: #fff; }
 
-        .done { opacity: 0.6; background: #f8fafc; pointer-events: none; }
+        .done { opacity: 0.7; background: var(--done-bg); }
         .done .counter { background: #22c55e; color: white; border-color: #22c55e; }
 
-        footer { text-align: center; padding: 40px; margin-top: 40px; background: #fff; border-top: 5px solid var(--accent); }
+        .reset-btn { background: #e74c3c; color: white; border: none; padding: 12px 25px; border-radius: 50px; cursor: pointer; font-family: 'Amiri'; font-weight: bold; display: block; margin: 30px auto; }
+        footer { text-align: center; padding: 30px; margin-top: 20px; background: #fff; border-top: 5px solid var(--accent); }
         .hide { display: none; }
     </style>
 </head>
@@ -53,39 +68,47 @@
 
 <div class="header-widgets">
     <div class="widget-box">
-        <div class="date-label">التاريخ الهجري اليوم</div>
-        <div class="date-text">الخميس 09 رمضان 1447هـ</div>
-        <div class="date-label">التاريخ الميلادي اليوم</div>
-        <div class="date-text" style="color:#7f8c8d; font-size: 1.1rem;">الخميس 26 فبراير 2026م</div>
-        <div class="countdown-box">🌙 متبقي من رمضان على العيد: 21 يوم تقريباً</div>
+        <div class="date-label">اليوم</div>
+        <div id="full-date" class="date-text">...</div>
+        <div class="date-label" style="margin-top: 10px;">المتبقي على عيد الفطر 1447هـ</div>
+        <div class="countdown-container">
+            <div class="time-segment"><div class="flip-card" id="days">00</div><div class="segment-label">أيام</div></div>
+            <div class="time-segment"><div class="flip-card" id="hours">00</div><div class="segment-label">ساعات</div></div>
+            <div class="time-segment"><div class="flip-card" id="minutes">00</div><div class="segment-label">دقائق</div></div>
+            <div class="time-segment"><div class="flip-card" id="seconds">00</div><div class="segment-label">ثواني</div></div>
+        </div>
     </div>
     <div class="widget-box">
-        <div class="date-label">تذكير تلقائي</div>
+        <div class="date-label">لا تنسَ ذكر الله</div>
         <div id="auto-zekr-box">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</div>
     </div>
 </div>
 
 <div class="container">
+    <div id="time-hint-box" class="time-hint"></div>
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('morn', this)">أذكار الصباح ☀️</button>
-        <button class="tab-btn" onclick="switchTab('eve', this)">أذكار المساء 🌙</button>
+        <button id="morn-tab" class="tab-btn" onclick="switchTab('morn', this)">الصباح ☀️</button>
+        <button id="eve-tab" class="tab-btn" onclick="switchTab('eve', this)">المساء 🌙</button>
+        <button id="sleep-tab" class="tab-btn" onclick="switchTab('sleep', this)">النوم 😴</button>
     </div>
-
     <div id="morn-sec"></div>
     <div id="eve-sec" class="hide"></div>
-
-    <footer>
-        بواسطة: <b>عبدالعزيز ( أبو نواف )</b><br>
-      
-    </footer>
+    <div id="sleep-sec" class="hide"></div>
+    <button class="reset-btn" onclick="resetProgress()">إعادة تصفير جميع العدادات 🔄</button>
+    <footer>بواسطة: <b>عبدالعزيز ( أبو نواف )</b></footer>
 </div>
 
 <script>
+    // النصوص الكاملة للسور
+    const SuraIkhlas = "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\n﴿قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ﴾";
+    const SuraFalaq = "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\n﴿قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ﴾";
+    const SuraNas = "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\n﴿قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ﴾";
+
     const morningData = [
         { t: "﴿ٱللَّهُ لَاۤ إِلَـٰهَ إِلَّا هُوَ ٱلۡحَیُّ ٱلۡقَیُّومُۚ لَا تَأۡخُذُهُۥ سِنَةࣱ وَلَا نَوۡمࣱۚ لَّهُۥ مَا فِی ٱلسَّمَـٰوَ ٰ⁠تِ وَمَا فِی ٱلۡأَرۡضِۗ مَن ذَا ٱلَّذِی یَشۡفَعُ عِندَهُۥۤ إِلَّا بِإِذۡنِهِۦۚ یَعۡلَمُ مَا بَیۡنَ أَیۡدِيهِمۡ وَمَا خَلۡفَهُمۡۖ وَلَا یُحِيطُونَ بِشَیۡءࣱ مِّنۡ عِلۡمِهِۦۤ إِلَّا بِمَا شَاۤءَۚ وَسِعَ كُرۡسِیُّهُ ٱلسَّمَـٰوَ ٰ⁠تِ وَٱلۡأَرۡضَۖ وَلَا یَـُٔودُهُۥ حِفۡظُهُمَاۚ وَهُوَ ٱلۡعَلِیُّ ٱلۡعَظِيمُ﴾", c: 1 },
-        { t: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\n﴿قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ﴾", c: 3 },
-        { t: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\n﴿قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ﴾", c: 3 },
-        { t: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\n﴿قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ﴾", c: 3 },
+        { t: SuraIkhlas, c: 3 },
+        { t: SuraFalaq, c: 3 },
+        { t: SuraNas, c: 3 },
         { t: "أَصْبَحْنَا وَأَصْبَحَ المُلْكُ لِلَّهِ، وَالحَمْدُ لِلَّهِ لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذَا اليَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا اليَوْمِ وَشرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الكَسَلِ وَسُوءِ الكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي القَبْرِ.", c: 1 },
         { t: "اللَّهُمَّ أَنْتَ رَبِّي لاَ إِلَهَ إِلاَّ أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطعتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ لَذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ.", c: 1 },
         { t: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي.", c: 1 },
@@ -103,9 +126,9 @@
 
     const eveningData = [
         { t: "﴿ٱللَّهُ لَاۤ إِلَـٰهَ إِلَّا هُوَ ٱلۡحَیُّ ٱلۡقَیُّومُۚ لَا تَأۡخُذُهُۥ سِنَةࣱ وَلَا نَوۡمࣱۚ لَّهُۥ مَا فِی ٱلسَّمَـٰوَ ٰ⁠تِ وَمَا فِی ٱلۡأَرۡضِۗ مَن ذَا ٱلَّذِی یَشۡفَعُ عِندَهُۥۤ إِلَّا بِإِذۡنِهِۦۚ یَعۡلَمُ مَا بَیۡنَ أَیۡدِيهِمۡ وَمَا خَلۡفَهُمۡۖ وَلَا یُحِيطُونَ بِشَیۡءࣱ مِّنۡ عِلۡمِهِۦۤ إِلَّا بِمَا شَاۤءَۚ وَسِعَ كُرۡسِیُّهُ ٱلسَّمَـٰوَ ٰ⁠تِ وَٱلۡأَرۡضَۖ وَلَا یَـُٔودُهُۥ حِفۡظُهُمَاۚ وَهُوَ ٱلۡعَلِیُّ ٱلۡعَظِيمُ﴾", c: 1 },
-        { t: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\n﴿قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ﴾", c: 3 },
-        { t: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\n﴿قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ﴾", c: 3 },
-        { t: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\n﴿قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ﴾", c: 3 },
+        { t: SuraIkhlas, c: 3 },
+        { t: SuraFalaq, c: 3 },
+        { t: SuraNas, c: 3 },
         { t: "أَمْسَيْنَا وَأَمْسَى المُلْكُ لِلَّهِ، وَالحَمْدُ لِلَّهِ لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذِهِ اللَّيْلَةِ وَشرِّ مَا بَعْدَهَا، رَبِّ أَعُوذُ بِكَ مِنَ الكَسَلِ وَسُوءِ الكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي القَبْرِ.", c: 1 },
         { t: "اللَّهُمَّ أَنْتَ رَبِّي لاَ إِلَهَ إِلاَّ أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطعتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ لَذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ.", c: 1 },
         { t: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي.", c: 1 },
@@ -120,72 +143,136 @@
         { t: "اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى نَبِيِّنَا مُحَمَّدٍ.", c: 10 }
     ];
 
-    const userTargets = {};
+    const sleepData = [
+        { ins: "النفث في الكفين وقراءة المعوذات:", t: "يجمع كفيه ثم ينفث فيهما فيقرأ:\n" + SuraIkhlas + "\n" + SuraFalaq + "\n" + SuraNas + "\nثم يمسح بهما ما استطاع من جسده.", c: 3 },
+        { ins: "آية الكرسي:", t: "﴿اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ﴾", c: 1 },
+        { ins: "أواخر سورة البقرة:", t: "﴿آمَنَ الرَّسُولُ بِمَا أُنزِلَ إِلَيْهِ مِن رَّبِّهِ وَالْمُؤْمِنُونَ كُلٌّ آمَنَ بِاللَّهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ لَا نُفَرِّقُ بَيْنَ أَحَدٍ مِّن رُّسُلِهِ وَقَالُوا سَمِعْنَا وَأَطَعْنَا غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ الْمَصِيرُ * لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ رَبَّنَا لَا تُؤَاخذْنَا إِن نَّسِينَا أَوْ أَخْطَأْنَا رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَا إِصْرًا كَمَا حَمَلْتَهُ عَلَى الَّذِينَ مِن قَبْلِنَا رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طاقةَ لَنَا بِهِ وَاعْفُ عَنَّا وَاغْفِرْ لَنَا وَارْحَمْنَا أَنتَ مَوْلَانَا فَانصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ﴾", c: 1 },
+        { ins: "باسمك ربي:", t: "بِاسْمِكَ رَبِّي وَضَعْتُ جَنْبِي، وَبِكَ أَرْفَعُهُ، فَإِنْ أَمْسَكْتَ نَفْسِي فَارْحَمْهَا، وَإِنْ أَرْسَلْتَهَا فَاحْفَظْهَا بِمَا تَحْفَظُ بِهِ عِبَادَكَ الصَّالِحِينَ.", c: 1 },
+        { ins: "اللهم إنك خلقت نفسي:", t: "اللَّهُمَّ إِنَّكَ خَلَقْتَ نَفْسِي وَأَنْتَ تَوَفَّاهَا، لَكَ مَمَاتُهَا وَمَحْيَاهَا، إِنْ أَحْيَيْتَهَا فَاحْفَظْهَا، وَإِنْ أَمَتَّهَا فَاغْفِرْ لَهَا، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ.", c: 1 },
+        { ins: "اللهم قني عذابك:", t: "اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ.", c: 3 },
+        { ins: "باسمك اللهم:", t: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا.", c: 1 },
+        { ins: "التسبيح والتحميد والتكبير:", t: "سُبْحَانَ اللَّهِ (33 مرة)\nالْحَمْدُ لِلَّهِ (33 مرة)\nاللَّهُ أَكْبَرُ (34 مرة)", c: 1 },
+        { ins: "دعاء رب السموات:", t: "اللَّهُمَّ رَبَّ السَّمَوَاتِ السَّبْعِ وَرَبَّ الْعَرْشِ الْعَظِيمِ، رَبَّنَا وَرَبَّ كُلِّ شَيْءٍ، فَالِقَ الْحَبِّ وَالنَّوَى، وَمُنْزِلَ التَّوْرَاةِ وَالْإِنجِيلِ وَالْفُرْقَانِ، أَعُوذُ بِكَ مِنْ شَرِّ كُلِّ شَيْءٍ أَنْتَ آخِذٌ بِنَاصِيَتِهِ، اللَّهُمَّ أَنْتَ الْأَوَّلُ فَلَيْسَ قَبْلَكَ شَيْءٌ، وَأَنْتَ الْآخِرُ فَلَيْسَ بَعْدَكَ شَيْءٌ، وَأَنْتَ الظَّاهِرُ فَلَيْسَ فَوْقَكَ شَيْءٌ، وَأَنْتَ الْبَاطِنُ فَلَيْسَ دُونَكَ شَيْءٌ، اقْضِ عَنَّا الدَّيْنَ وَأَغْنِنَا مِنَ الْفَقْرِ.", c: 1 },
+        { ins: "الحمد لله الذي أطعمنا:", t: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا، وَكَفَانَا وَآوَانَا، فَكَمْ مِمَّنْ لَا كَافِيَ لَهُ وَلَا مُؤْوِيَ.", c: 1 },
+        { ins: "اللهم عالم الغيب:", t: "اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَوَاتِ وَالْأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءًا، أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ.", c: 1 },
+        { ins: "الدعاء الختامي:", t: "اللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْكَ، وَفَوَّضْتُ أَمْرِي إِلَيْكَ، وَوَجَّهْتُ وَجْهِي إِلَيْكَ، وَأَلْجَأْتُ ظَهْرِي إِلَيْكَ، رَغْبَةً وَرَهْبَةً إِلَيْكَ، لَا مَلْجَأَ وَلَا مَنْجَا مِنْكَ إِلَّا إِلَيْكَ، آمَنْتُ بِكِتَابِكَ الَّذِي أَنْزَلْتَ، وَبِنَبِيِّكَ الَّذِي أَرْسَلْتَ.", c: 1 }
+    ];
+
+    let userProgress = JSON.parse(localStorage.getItem('zekr_2026_final_v1')) || {};
+
+    function updateHeader() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('full-date').innerText = now.toLocaleDateString('ar-SA', options);
+
+        const target = new Date("March 20, 2026 00:00:00").getTime();
+        const diff = target - now.getTime();
+        if (diff > 0) {
+            document.getElementById("days").innerText = Math.floor(diff / 86400000);
+            document.getElementById("hours").innerText = Math.floor((diff % 86400000) / 3600000).toString().padStart(2,'0');
+            document.getElementById("minutes").innerText = Math.floor((diff % 3600000) / 60000).toString().padStart(2,'0');
+            document.getElementById("seconds").innerText = Math.floor((diff % 60000) / 1000).toString().padStart(2,'0');
+        }
+
+        const hour = now.getHours();
+        const hint = document.getElementById('time-hint-box');
+        if (hour >= 20 || hour < 4) {
+            switchTab('sleep', document.getElementById('sleep-tab'));
+            hint.innerText = "😴 وقت أذكار النوم | أحلام هانئة";
+        } else if (hour >= 4 && hour < 12) {
+            switchTab('morn', document.getElementById('morn-tab'));
+            hint.innerText = "☀️ وقت أذكار الصباح | تقبل الله طاعتك";
+        } else if (hour >= 16 && hour < 20) {
+            switchTab('eve', document.getElementById('eve-tab'));
+            hint.innerText = "🌙 وقت أذكار المساء | حفظك الرحمن";
+        }
+    }
 
     function renderZekr(list, containerId, type) {
-        document.getElementById(containerId).innerHTML = list.map((z, idx) => `
-            <div class="zekr-card ${type}-card" id="card-${type}-${idx}" onclick="handleCount('${type}', ${idx}, ${z.c})">
+        document.getElementById(containerId).innerHTML = list.map((z, idx) => {
+            const key = `${type}-${idx}`;
+            const current = userProgress[key] || 0;
+            const target = userProgress[key + '_target'] || z.c;
+            const isDone = current >= target;
+            return `
+            <div class="zekr-card ${type}-card ${isDone?'done':''}" id="card-${key}" onclick="handleCount('${type}', ${idx}, ${z.c})">
+                ${z.ins ? `<div class="instruction">${z.ins}</div>` : ''}
                 <div class="zekr-text">${z.t}</div>
                 <div class="card-footer">
                     <div class="counter-wrapper">
-                        ${z.multi ? 
-                            `<button class="opt-btn active" onclick="setMultiTarget('${type}', ${idx}, 10, event)">١٠ مرات</button>
-                             <button class="opt-btn" onclick="setMultiTarget('${type}', ${idx}, 100, event)">١٠٠ مرة</button>` 
-                            : `<span>المطلوب: ${z.c}</span>`
-                        }
+                        ${z.multi ? `<button class="opt-btn ${target==10?'active':''}" onclick="setTarget('${type}',${idx},10,event)">١٠</button>
+                                     <button class="opt-btn ${target==100?'active':''}" onclick="setTarget('${type}',${idx},100,event)">١٠٠</button>` 
+                                   : `<span>المطلوب: ${target}</span>`}
                     </div>
-                    <div class="counter" id="num-${type}-${idx}">0</div>
+                    <div class="counter" id="num-${key}">${isDone?'✓':current}</div>
                 </div>
-            </div>
-        `).join('');
-    }
-
-    function setMultiTarget(type, idx, val, e) {
-        e.stopPropagation();
-        const key = `${type}-${idx}`;
-        userTargets[key] = val;
-        const card = document.getElementById(`card-${key}`);
-        card.querySelectorAll('.opt-btn').forEach(b => {
-            b.classList.toggle('active', parseInt(b.innerText) === val);
-        });
-        document.getElementById(`num-${key}`).innerText = "0";
-        card.classList.remove('done');
+            </div>`;
+        }).join('');
     }
 
     function handleCount(type, idx, def) {
         const key = `${type}-${idx}`;
-        const target = userTargets[key] || def;
-        const box = document.getElementById(`num-${key}`);
-        let current = parseInt(box.innerText);
-        if (current < target) {
-            current++;
-            box.innerText = current;
-            if (current === target) {
+        const target = userProgress[key + '_target'] || def;
+        userProgress[key] = (userProgress[key] || 0);
+        if (userProgress[key] < target) {
+            userProgress[key]++;
+            save();
+            const box = document.getElementById(`num-${key}`);
+            box.innerText = userProgress[key];
+            if(window.navigator.vibrate) window.navigator.vibrate(40);
+            if (userProgress[key] >= target) {
                 document.getElementById(`card-${key}`).classList.add('done');
                 box.innerText = "✓";
             }
         }
     }
 
+    function setTarget(type, idx, val, e) {
+        e.stopPropagation();
+        const key = `${type}-${idx}`;
+        userProgress[key + '_target'] = val;
+        userProgress[key] = 0;
+        save();
+        location.reload();
+    }
+
+    function save() { localStorage.setItem('zekr_2026_final_v1', JSON.stringify(userProgress)); }
+    function resetProgress() { if(confirm("هل تريد تصفير جميع العدادات؟")) { userProgress={}; save(); location.reload(); } }
+    
     function switchTab(type, btn) {
         document.getElementById('morn-sec').classList.toggle('hide', type !== 'morn');
         document.getElementById('eve-sec').classList.toggle('hide', type !== 'eve');
+        document.getElementById('sleep-sec').classList.toggle('hide', type !== 'sleep');
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    const autoZ = ["سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ", "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ", "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ"];
+     const autoZ = [
+        "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ", 
+        "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ",
+        "لا إله إلا الله",
+        "سبحان الله، والحمد لله، ولا إله إلا الله، والله أكبر",
+        "الحمد لله",
+        "سبحان الله وبحمده، سبحان الله العظيم",
+        "يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ أَصْلِحْ لِي شَأْنِي كُلَّهُ وَلاَ تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ",
+        "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
+        "لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+        "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ", 
+        "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّه"
+    ];
     let i = 0;
     setInterval(() => {
         const box = document.getElementById('auto-zekr-box');
         box.style.opacity = 0;
         setTimeout(() => { box.innerText = autoZ[i]; box.style.opacity = 1; i = (i+1)%autoZ.length; }, 500);
-    }, 15000);
+    }, 6000);
 
     window.onload = () => {
+        updateHeader();
+        setInterval(updateHeader, 1000);
         renderZekr(morningData, 'morn-sec', 'morn');
         renderZekr(eveningData, 'eve-sec', 'eve');
+        renderZekr(sleepData, 'sleep-sec', 'sleep');
     };
 </script>
 </body>
